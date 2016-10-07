@@ -16,38 +16,64 @@ Lexer::Lexer(istream& streamread): storedstream(streamread)
 {
   ch=nextChar();
   pos=0;
+  tokepos=0;
   line=1;
 }
 
 char Lexer:: nextChar()
 {
   
-  char currentchar=storedstream.get();
-  if(currentchar==EOF)
-  {
-   currentchar='#';
-  }
-  else if (currentchar=='\n')
-  {
-   pos=0;
-   line++;
-   currentchar=' ';
-   }
+  //char currentchar=storedstream.get();
+  
+  
+  if(!storedstream.eof())
+    {
+    /* if (storedstream.get()=='\n')
+    {
+    pos=0;
+    line++;
+    currentchar= ' ';
+    }
    else
    {
    pos++;
+   //currentchar= storedstream.get();
     }
-  
+  }  
+  if(storedstream.eof())
+    {
+      currentchar='#';
+    }
+    return currentchar;*/
+  // char currentchar=storedstream.get();
+      char currentchar=storedstream.get();
+      if (currentchar=='\n')
+      {
+	pos=0;
+	line++;
+	currentchar=' ';
+      }
+     
     
-   return currentchar;
-
+    else
+      {
+	pos++;
+	return currentchar;
+      }
+    }
+  else
+    {
+      return '#';
+    }
+ 
 }
   
 Token Lexer::nextToken()
 {
-  
+  // int tokepos=0;
+  int lineholder=0;
   string lexeme;
-  int type;
+   int type;
   string keywords[]={"if","else","while", "function", "var","printf","return"};
   int position[]={Token::IF, Token::ELSE, Token::WHILE,  Token::FUNCTION, Token::VAR, Token:: PRINTF, Token::RETURN};
   if(ch==' ')
@@ -74,6 +100,8 @@ Token Lexer::nextToken()
     } */
    if(isalpha(ch))
     {
+      tokepos++;
+	lineholder=line;
       bool match;
       while(isalpha(ch))
 	{
@@ -83,7 +111,8 @@ Token Lexer::nextToken()
 	}
        for(int i=0; i<(int)(sizeof(keywords)/sizeof(keywords[0]));i++)
 	{
-	   match=true;
+	  
+	  match=true;
 	  if(lexeme==keywords[i])
 	    {
 	      type=position[i];
@@ -93,11 +122,13 @@ Token Lexer::nextToken()
 	}
        if(match==true){
 	 type=Token::IDENT;
-	  }
+       }
     }
 
    else if(isdigit(ch))
     {
+      tokepos++;
+      lineholder=line;
       type=Token::INTLIT;
       while(isdigit(ch))
       {
@@ -107,21 +138,29 @@ Token Lexer::nextToken()
      }
      else if(ch=='"')
       {
+	tokepos++;
+	lineholder=line;
 	type=Token::STRINGLIT;
+	lexeme+='"';
+	ch=nextChar();
 	while(ch!='"')
 	  {
 	    
-	    lexeme+=ch;
-            ch=nextChar();	    
-           }
+	 lexeme+=ch;
+	 ch=nextChar();	    
+	  }
+	lexeme+='"';
 	ch=nextChar();
        }
 	else{
-
+	  // if(ch!=EOF)
+	  // {
             switch(ch)
             {
 	    
 	    case '+':
+	      tokepos++;
+	      lineholder=line;
 	    lexeme+='+';
 	    type=Token::PLUS;
 	    ch=nextChar();
@@ -135,6 +174,8 @@ Token Lexer::nextToken()
 
 	    case '=':
 	    {
+	      tokepos++;
+	      lineholder=line;
 	    char temp='=';
 	    ch=nextChar();
 	    if(ch!=temp)
@@ -154,18 +195,25 @@ Token Lexer::nextToken()
 	      }
 
 	   case '-':
+	   tokepos++;
+	   lineholder=line;
 	   lexeme+='-';
 	   type=Token::MINUS;
 	   ch=nextChar();
 	   break;
 
 	   case '*':
+	   tokepos++;
+	   lineholder=line;
 	   lexeme+='*';
 	   type=Token::TIMES;
 	   ch=nextChar();
+	   
 	   break;
 
 	   case '/':
+	   tokepos++;
+	   lineholder=line;
 	   lexeme+='/';
 	   type=Token::DIVIDE;
 	   ch = nextChar();
@@ -176,6 +224,8 @@ Token Lexer::nextToken()
 	    char temp9=nextChar();
 	    if(temp9=='&')
 	      {
+		tokepos++;
+		lineholder=line;
 		lexeme+=temp9+'&';
 		type=Token::AND;
 		ch=nextChar();
@@ -188,30 +238,41 @@ Token Lexer::nextToken()
 	      }
             
 	   case '(':
+	     tokepos++;
+	     lineholder=line;
 	   lexeme+='(';
 	   type=Token::LPAREN;
 	   ch=nextChar();
 	   break;
 
 	   case ')':
+	     tokepos++;
+	     lineholder=line;
 	   lexeme+=')';
 	   type=Token::RPAREN;
 	   ch=nextChar();
 	   break;
 
 	   case '{':
+	   tokepos++;
+	   lineholder=line;
 	   lexeme+='{';
 	   type=Token::LBRACE;
 	   ch=nextChar();
 	   break;
 
 	  case '}':
+	  tokepos++;
+	  lineholder=line;
+	    
 	  lexeme+='}';
 	  type=Token::RBRACE;
-	 ch=nextChar();
+	   ch=nextChar();
 	   break;
 
 	   case ',':
+	   tokepos++;
+	   lineholder=line;
 	   lexeme+=',';
 	   type=Token::COMMA;
 	   ch=nextChar();
@@ -221,6 +282,8 @@ Token Lexer::nextToken()
 
 	   case '>':
 	     {
+	    tokepos++;
+	    lineholder=line;
 	   char temp3='>';
 	   ch=nextChar();
 	   if(ch=='=')
@@ -240,7 +303,10 @@ Token Lexer::nextToken()
 
 	     
            case '<':
-	     {
+	   {
+	       
+	   tokepos++;
+	   lineholder=line;
 	   char temp5= '<';
 	   ch=nextChar();
 	   if(ch=='=')
@@ -260,22 +326,30 @@ Token Lexer::nextToken()
 	     }
 
 	   case ';':
+	   tokepos++;
+	   lineholder=line;
 	   lexeme+=';';
 	   type=Token::SEMICOLON;
 	   ch=nextChar();
 	   break;
 
-	    case '#':
+	     case '#':
+	    tokepos++;
+	    lineholder=line;
 	    type=Token::ENDOFFILE;
 	    lexeme="You have reached end of file";
+	    // ch=nextChar();
 	    break;
 
 	    case '|':
 	      {
+	      
 	    char temp7='|';
 	    ch=nextChar();
             if(ch==temp7)
 	      {
+	        tokepos++;
+		lineholder=line;
 		type=Token::OR;
 		lexeme+=temp7+ch;
 		ch=nextChar();
@@ -289,14 +363,26 @@ Token Lexer::nextToken()
 	      }
 
 	    default:
-	     type=Token::ERROR;
+	    tokepos++;
+	    lineholder=line;
+	   type=Token::ERROR;
 	   lexeme+="ERROR";
 	   ch=nextChar();
 	   break;
+	    }
 	}
-	
+       
+
+   /* else if(ch=='#')
+	    {
+	      tokepos++;
+	      lineholder=line;
+	      type=Token::ENDOFFILE;
+	      lexeme="You have reached end of file";
+	      // break;        
+	    }
 	}
-   /* for(int i=0; i<(int)(sizeof(keywords)/sizeof(keywords[0]));i++)
+    for(int i=0; i<(int)(sizeof(keywords)/sizeof(keywords[0]));i++)
     {
       if(lexeme==keywords[i])
 	{
@@ -309,8 +395,20 @@ Token Lexer::nextToken()
 	}*/
   
    //ch=nextChar();
-  return Token(type, lexeme, line, pos);
+   /* if(pos==0)
+     {
+       tokepos=0;
+     }*/
+   if(line-lineholder==1)
+     {
+       tokepos=0;
+     }
+   
+  return Token(type, lexeme, line, tokepos);
+
 }
+
+
     
 
 
