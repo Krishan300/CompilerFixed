@@ -22,26 +22,23 @@ Lexer::Lexer(istream& streamread): storedstream(streamread)
 char Lexer:: nextChar()
 {
   
-  char currentchar;
-  if(!storedstream.eof())
+  char currentchar=storedstream.get();
+  if(currentchar==EOF)
   {
-   currentchar=storedstream.get();
-   
-  if(currentchar=='\n')
-	{
-	  pos=0;
-	  line++;
-	  currentchar=' ';
-	}
-      else
-	{
-	  pos++;
-	}
+   currentchar='#';
   }
-    if(storedstream.eof())
-    {
-      currentchar='#';
+  else if (currentchar=='\n')
+  {
+   pos=0;
+   line++;
+   currentchar=' ';
+   }
+   else
+   {
+   pos++;
     }
+  
+    
    return currentchar;
 
 }
@@ -99,7 +96,7 @@ Token Lexer::nextToken()
 	  }
     }
 
-    else if(isdigit(ch))
+   else if(isdigit(ch))
     {
       type=Token::INTLIT;
       while(isdigit(ch))
@@ -117,6 +114,7 @@ Token Lexer::nextToken()
 	    lexeme+=ch;
             ch=nextChar();	    
            }
+	ch=nextChar();
        }
 	else{
 
@@ -244,7 +242,7 @@ Token Lexer::nextToken()
            case '<':
 	     {
 	   char temp5= '<';
-	   char ch=nextChar();
+	   ch=nextChar();
 	   if(ch=='=')
 	   {
 	     lexeme=temp5+ch;
@@ -310,7 +308,7 @@ Token Lexer::nextToken()
  	}
 	}*/
   
-  ch=nextChar();
+   //ch=nextChar();
   return Token(type, lexeme, line, pos);
 }
     
