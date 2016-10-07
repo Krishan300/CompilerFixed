@@ -14,5 +14,3 @@ function main() {
     c=123456;
     printf("%ld %ld\n", a, b);
   }
-}
-
