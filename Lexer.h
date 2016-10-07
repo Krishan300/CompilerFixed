@@ -20,6 +20,7 @@ public:
   
 int line;
 int pos;
+  int tokepos;
 char ch; 
 istream& storedstream;
 Token nextToken();
