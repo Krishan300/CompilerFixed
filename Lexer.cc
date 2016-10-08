@@ -26,8 +26,8 @@ char Lexer:: nextChar()
   //char currentchar=storedstream.get();
   
   
-  if(!storedstream.eof())
-    {
+  // if(!storedstream.eof())
+  //{
     /* if (storedstream.get()=='\n')
     {
     pos=0;
@@ -47,27 +47,35 @@ char Lexer:: nextChar()
     return currentchar;*/
   // char currentchar=storedstream.get();
       char currentchar=storedstream.get();
-      if (currentchar=='\n')
+      if (currentchar== '\n' )
       {
 	pos=0;
 	line++;
 	currentchar=' ';
       }
+      else if  (currentchar==EOF)
+	{
+	  currentchar= '#';
+	}
      
     
-    else
-      {
+      /*else (isalpha(currentchar) || isdigit(currentchar) || ispunct(currentchar))        {
 	pos++;
-	return currentchar;
-      }
+	//return currentchar;
+	}*/
+         else 
+	 {
+	   pos++;
+	 }
+      return currentchar;
     }
-  else
+  /* else
     {
-      return '#';
-    }
+      currentchar= '#';
+      }*/
  
-}
-  
+
+
 Token Lexer::nextToken()
 {
   // int tokepos=0;
@@ -401,7 +409,7 @@ Token Lexer::nextToken()
      }*/
    if(line-lineholder==1)
      {
-       tokepos=0;
+       tokepos=1;
      }
    
   return Token(type, lexeme, line, tokepos);
