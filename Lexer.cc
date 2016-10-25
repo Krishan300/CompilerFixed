@@ -22,8 +22,8 @@ Lexer::Lexer(istream& streamread): storedstream(streamread)
 
 char Lexer:: nextChar()
 {
-  
-  //char currentchar=storedstream.get();
+     
+  // char currentchar=storedstream.get();
   
   
   // if(!storedstream.eof())
@@ -46,17 +46,20 @@ char Lexer:: nextChar()
     }
     return currentchar;*/
   // char currentchar=storedstream.get();
-      char currentchar=storedstream.get();
+  //char  currentchar;
+   while(!storedstream.eof())
+   {
+    char  currentchar=storedstream.get();
       if (currentchar== '\n' )
       {
 	pos=0;
 	line++;
-	currentchar=' ';
+	return ' ';
       }
-      else if  (currentchar==EOF)
+      /* else if  (currentchar==EOF)
 	{
 	  currentchar= '#';
-	}
+	  }*/
      
     
       /*else (isalpha(currentchar) || isdigit(currentchar) || ispunct(currentchar))        {
@@ -66,8 +69,15 @@ char Lexer:: nextChar()
          else 
 	 {
 	   pos++;
+	   return currentchar;
 	 }
-      return currentchar;
+      //return currentchar;
+   }
+       
+       pos++;	      
+       return 'a';
+         
+    // return currentchar;
     }
   /* else
     {
@@ -111,7 +121,7 @@ Token Lexer::nextToken()
       tokepos++;
 	lineholder=line;
       bool match;
-      while(isalpha(ch))
+      while(isalpha(ch) || isdigit(ch))
 	{
 	  // cout<<ch<<endl;  
 	  lexeme+=ch;
@@ -258,6 +268,7 @@ Token Lexer::nextToken()
 	     lineholder=line;
 	   lexeme+=')';
 	   type=Token::RPAREN;
+
 	   ch=nextChar();
 	   break;
 
@@ -272,7 +283,6 @@ Token Lexer::nextToken()
 	  case '}':
 	  tokepos++;
 	  lineholder=line;
-	    
 	  lexeme+='}';
 	  type=Token::RBRACE;
 	   ch=nextChar();
@@ -341,7 +351,7 @@ Token Lexer::nextToken()
 	   ch=nextChar();
 	   break;
 
-	     case '#':
+	     case 'a':
 	    tokepos++;
 	    lineholder=line;
 	    type=Token::ENDOFFILE;
