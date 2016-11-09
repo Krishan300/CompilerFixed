@@ -56,16 +56,7 @@ char Lexer:: nextChar()
 	line++;
 	return ' ';
       }
-      /* else if  (currentchar==EOF)
-	{
-	  currentchar= '#';
-	  }*/
-     
-    
-      /*else (isalpha(currentchar) || isdigit(currentchar) || ispunct(currentchar))        {
-	pos++;
-	//return currentchar;
-	}*/
+      
          else 
 	 {
 	   pos++;
