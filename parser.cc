@@ -1,7 +1,9 @@
 #include "parser.h"
 #include "Token.h"
 #include "SymbolTable.h"
+//#include "hashTable.cc"
 #include <string>
+#include <stdio.h>
 #include <cstring>
 
 
@@ -26,12 +28,14 @@ const string Parser::ops[] =
 
 
 Parser::Parser(Lexer& lexerx, ostream& outx): lexer(lexerx), out(outx), lindex(1), tindex(1) {
-  token = lexer.nextToken();
-  //  tabofsymbols= SymbolTable();
+    token = lexer.nextToken();
+    tabofsymbols= SymbolTable();
+    pushvandstore=new string[1000];
+    keepstrack=0; 
 }
 
-Parser::~Parser() {
-}
+/*Parser::~Parser() {
+  }*/
 
 /*const string Parser::ops[] =
   {"ADD", "SUB", "MULT", "DIV",
@@ -74,6 +78,8 @@ Parser::TreeNode* Parser::factor() {
      if(toketype== Token::IDENT)
       {
       string identlexeme=token.getlexeme();
+      // identlexeme=tabofsymbols.getUniqueSymbol(identlexeme);
+      // cout<<identlexeme.c_str()<<endl;
       // cout<<token.getlexeme()<<endl;
       //node=new TreeNode(PUSHV, token.getlexeme());
       token=lexer.nextToken();
@@ -84,10 +90,23 @@ Parser::TreeNode* Parser::factor() {
              }
 	      else if(token.gettype()==Token::ASSIGN)
 	    {
+	      // tabofsymbols.addSymbol(identlexeme);
+	     identlexeme=tabofsymbols.getUniqueSymbol(identlexeme);
+             if(identlexeme==" ")
+	       {
+		 error(identlexeme);
+	       }
              node=assignStatement(identlexeme);
 	     }
            else
 	     {
+	       // tabofsymbols.addSymbol(identlexeme);
+	       identlexeme=tabofsymbols.getUniqueSymbol(identlexeme);
+	       if(identlexeme==" ")
+		 {
+		   error(identlexeme);
+		 }
+	       // tabofsymbols.add(identlexeme);
 	       node=new TreeNode(PUSHV, identlexeme);
 	       // token=lexer.nextToken();
 	     }
@@ -255,18 +274,19 @@ Parser::TreeNode* Parser::block(){
   
   token=lexer.nextToken();
   TreeNode* node;
+   TreeNode* node2;
        if(token.gettype()==Token::RBRACE)
 	 {
-	   node=new TreeNode(SEQ,"nothing");
+	   node=new TreeNode(SEQ);
 	 }
-            else
-	    {
+         else
+	 {
                node=statement();
   
-             while(statement()!=NULL)
+	       while(token.gettype()==Token::WHILE || token.gettype()==Token::VAR || token.gettype()==Token::RETURN || token.gettype()==Token::IDENT || token.gettype()==Token::IF || token.gettype()==Token::PRINTF)
              {
-             TreeNode* node2=statement();
-             node=new TreeNode(SEQ, node, node2);
+	        node2=statement();
+	       node=new TreeNode(SEQ, node, node2);
 	  
              }
              check(Token::RBRACE, "Expecting right brace");
@@ -288,12 +308,13 @@ Parser::TreeNode* Parser::ifStatement(){
       token=lexer.nextToken();
       check(Token::LPAREN, "expecting left parenthesis.");
       token=lexer.nextToken();
+      // tabofsymbols.enterScope();
        node=logicalExpression();
       check(Token::RPAREN, "expecting right parenthesis.");
       token=lexer.nextToken();
-      // tabofsymbols.enterScope();
+       tabofsymbols.enterScope();
        TreeNode* thenBlock=block();
-       // tabofsymbols.exitScope();
+        tabofsymbols.exitScope();
        string JUMPF1Label=makeLabel();
        TreeNode* JumpF1=new TreeNode(JUMPF, JUMPF1Label);
        node=new TreeNode(SEQ, node, JumpF1);
@@ -309,10 +330,10 @@ Parser::TreeNode* Parser::ifStatement(){
 	  TreeNode* LabelL1=new TreeNode(LABEL, Label1);
 	  node=new TreeNode(SEQ, node, LabelL1);
 	  token=lexer.nextToken();
-	  // tabofsymbols.enterScope();
+	   tabofsymbols.enterScope();
 	  
 	   TreeNode* elsenode=block();
-	   // tabofsymbols.exitScope();
+	      tabofsymbols.exitScope();
 	  node=new TreeNode(SEQ, node, elsenode);
 	  // String JumpLabel2=makeLabel()+":";
 	  string Label2=JumpLabel2+":";
@@ -349,11 +370,15 @@ Parser::TreeNode* Parser::statement(){
      }
        else if(token.gettype()==Token::VAR)
      {
-       thestatement=vardefStatement();
+       thestatement= vardefStatement();
      }
      else if (token.gettype()==Token::RETURN)
        {
 	 thestatement=returnStatement();
+       }
+     else if(token.gettype()==Token::PRINTF)
+       {
+         thestatement=printfStatement();
        }
      else{
        thestatement=NULL;
@@ -371,6 +396,7 @@ Parser::TreeNode* Parser::statement(){
   }*/
 
 Parser::TreeNode* Parser::whileStatement(){
+  
   check(Token::WHILE, "Expecting while");  
   token=lexer.nextToken();
   check(Token::LPAREN, "Expecting left parenthesis");
@@ -379,8 +405,9 @@ Parser::TreeNode* Parser::whileStatement(){
   check(Token::RPAREN, "Expecting right parenthesis");
   token=lexer.nextToken();
   // tabofsymbols.enterScope();
+  tabofsymbols.enterScope();
   TreeNode* blocknode=block();
-  // tabofsymbols.exitScope();
+   tabofsymbols.exitScope();
   string Label1=makeLabel();
   TreeNode* L1=new TreeNode(LABEL, Label1+":");
   node=new TreeNode(SEQ, L1, node);
@@ -400,7 +427,7 @@ Parser::TreeNode* Parser::whileStatement(){
 Parser::TreeNode* Parser:: assignStatement(string identname){
   
   TreeNode* Identifier=new TreeNode(STORE, identname);
-  // tabofsymbols.addSymbol(token.getlexeme());
+  // identlexeme=tabofsymbols.getUniqueSymbol(identlexeme);
    token=lexer.nextToken();
    // check(Token::ASSIGN, "Expecting assignment statement");*/
   // token=lexer.nextToken();
@@ -413,6 +440,7 @@ Parser::TreeNode* Parser:: assignStatement(string identname){
 
 Parser::TreeNode* Parser:: funcall(string funcname){
   TreeNode* callnode=new TreeNode(CALL, funcname);
+ 
   TreeNode* retnode=callnode;
   bool isotherexpres=false;
   TreeNode* otherside;
@@ -444,26 +472,32 @@ Parser::TreeNode* Parser:: funcall(string funcname){
    }
 
 
-
-Parser::TreeNode* Parser::vardefStatement(){
+Parser:: TreeNode* Parser:: vardefStatement(){
   check(Token::VAR, "expecting var");
   token=lexer.nextToken();
   check(Token::IDENT, "expecting ident");
-  // tabofsymbols.addSymbol(token.getlexeme());   
+   tabofsymbols.addSymbol(token.getlexeme());   
   token=lexer.nextToken();
   while(token.gettype()==Token::COMMA)
     {
       token=lexer.nextToken();
       check(Token::IDENT, "expecting ident");
+      tabofsymbols.addSymbol(token.getlexeme());
       token=lexer.nextToken();
     }
   check(Token::SEMICOLON, "expecting semicolon");
   // TreeNode* ret= new TreeNode(SEQ,"this is placeholder");
   //return ret;
   token=lexer.nextToken();
-  TreeNode* placeholder=new TreeNode(SEQ, "this is placeholder");
+   TreeNode* placeholder=new TreeNode(SEQ);
+     
+	
+         
+	
   return placeholder;
 }
+
+
 
 Parser:: TreeNode* Parser::returnStatement(){
   check(Token::RETURN, "expecting return");
@@ -492,37 +526,59 @@ Parser:: TreeNode* Parser::parameterdef(string paramname, int count){
 Parser:: TreeNode* Parser::Function(){
   check(Token::FUNCTION, "expecting function");
   TreeNode* retNode;
-  
-  int identcounter=0;
+  string passtoparam;
+   int identcounter=0;
   token=lexer.nextToken();
-  TreeNode* leftnode=new TreeNode(FUNC, token.getlexeme());
+  TreeNode* leftnode=new TreeNode(FUNC, token.getlexeme()+":");
   check(Token::IDENT, "expecting ident");
   token=lexer.nextToken();
   check(Token::LPAREN, "expecting left paren");
+  // tabofsymbols.enterScope();
   token=lexer.nextToken();
-         if(token.gettype()==Token::IDENT)
+ 
+ 
+ 
+ 
+    if(token.gettype()==Token::IDENT)
 	 {
+	   tabofsymbols.enterScope();
+	   tabofsymbols.addSymbol(token.getlexeme());
+	    identcounter=identcounter+1;
+	   passtoparam=tabofsymbols.getUniqueSymbol(token.getlexeme());
 	   
-	   identcounter=identcounter+1;
-	   TreeNode* otherleft=parameterdef(token.getlexeme(), identcounter);
+	   TreeNode* otherleft=new TreeNode(STORE,passtoparam);
+	   token=lexer.nextToken();
            leftnode=new TreeNode(SEQ, leftnode, otherleft);
 	   
 	   // cout<<token.gettype()<<endl;
-	     token=lexer.nextToken();      
-     	        while(token.gettype()==Token::IDENT)
+	    token=lexer.nextToken();
+	    // cout<<token.gettype();
+	    while(identcounter>0)
+	      {
+		if(token.gettype()==Token::COMMA)
 		  {
-		    identcounter=identcounter+1;
-		    otherleft=parameterdef(token.getlexeme(), identcounter);
-		    leftnode=new TreeNode(SEQ, leftnode, otherleft);
+		  token=lexer.nextToken();
+		  
+		  }
+		  else if (token.gettype()==Token::IDENT)
+		  {
+		      identcounter=identcounter+1;
+		      tabofsymbols.addSymbol(token.getlexeme());
+		       passtoparam=tabofsymbols.getUniqueSymbol(token.getlexeme());
+		       otherleft=new TreeNode(STORE, passtoparam);
+		       token=lexer.nextToken();
+		       leftnode=new TreeNode(SEQ, leftnode, otherleft);
+		  }
 		    // check(Token::COMMA, "expecting comma");
-		       if(token.gettype()==Token::RPAREN)
+		       else if(token.gettype()==Token::RPAREN)
 		       {
+			 // tabofsymbols.exitScope();
 			break;
 		       }
-		       else if(token.gettype()==Token::COMMA)
+		       /* else if(token.gettype()==Token::COMMA)
 		      {
 		      token=lexer.nextToken();
-		       }
+		      }*/
 		    // check(Token::COMMA, "expecting comma");
 		    // // identcounter=identcounter+1;
 		    // otherleft=parameterdef(token.getlexeme(), identcounter);
@@ -530,16 +586,20 @@ Parser:: TreeNode* Parser::Function(){
 		    // token=lexer.nextToken();
 		  }
 	 }
+	 
 	 /*check(Token::IDENT, "expecting ident");
 	identcounter=identcounter+1;
 	TreeNode* lastparam=parameterdef(token.getlexeme(), identcounter);
-	leftnode=new TreeNode(SEQ, leftnode, lastparam);
-	//token=lexer.nextToken();*/
-	 
-       check(Token::RPAREN, "expecting right paren");
-       token=lexer.nextToken();
+	leftnode=new TreeNode(SEQ, leftnode, lastparam);*/
+	token=lexer.nextToken();
+	tabofsymbols.enterScope(); 
        TreeNode* rightnode=block();
+       tabofsymbols.exitScope();
        retNode=new TreeNode(SEQ, leftnode, rightnode);
+       if(identcounter>0)
+	 {
+       tabofsymbols.exitScope();
+	 }
        return retNode; 
 
 
@@ -554,7 +614,30 @@ Parser:: TreeNode* Parser::Function(){
   return individualparam;
   }*/
 
+string currentFunc;
+int nfmts = 0;
+string fmts[100];
+void Parser:: genasm(TreeNode* node){
+  cout<< "    global main\n    extern printf\n" ;
+  // genist(node);
+  vardefs(node);
+  cout<<"\n    segment .bss\n";
+  int i;
+  for(i=0; i<keepstrack; i++)
+    {
+      cout<<"    "+ pushvandstore[i]+" resq 1\n";
 
+    }
+  cout<<"\n    section .text\n";
+  genist(node);
+  cout<<"\n    section .data\n";
+  for (int i=0; i < nfmts; ++i) {
+
+  cout << "    fmt" << i+1 << ": db " << fmts[i] << ", 0" << endl;
+
+  }
+  
+}
 Parser::TreeNode* Parser:: compilationUnit(){
   // TreeNode* retnode;
   TreeNode* topnode=Function();
@@ -571,5 +654,346 @@ Parser::TreeNode* Parser:: compilationUnit(){
                     topnode=new TreeNode(SEQ, topnode, currfunction);
                   }
 	  }
-    return topnode;
-  } 
+	return topnode;
+}
+
+   
+
+void Parser::genist(TreeNode *node){
+    if(node!=NULL){
+  genist(node->leftChild);
+  genist(node->rightChild);
+  emit(node->op, node->val);
+    }
+  }
+
+void Parser:: vardefs(TreeNode *node){
+  if(node!=NULL)
+  {
+    vardefs(node->leftChild);
+    vardefs(node->rightChild);
+    bssection(node);
+    }
+}
+
+void Parser:: bssection(TreeNode *node)
+{
+  int keepstrack2;
+  int tellsbefore=0;
+  if(node->op==PUSHV || node->op==STORE)
+    {
+      for(keepstrack2=0;keepstrack2<1000;keepstrack2++)
+	{
+          if(pushvandstore[keepstrack2]==node->val)
+	    {
+              tellsbefore+=1;
+	      break;
+	    }
+	     
+	}
+      if(tellsbefore==0)
+	{
+	  pushvandstore[keepstrack]=node->val;
+	  keepstrack++;
+	}
+    }
+  /* if(tellsbefore==0)
+    {
+  pushvandstore[keepstrack]=node->val;
+  keepstrack++;
+  }*/
+}
+void Parser:: emit(Operation op, string val){
+  /* string currentFunc;
+  int nfmts = 0;
+  string fmts[100];*/
+  string funcval;
+  switch(op){
+  case ADD:
+    {
+      cout<<"    pop rbx\n    pop rax\n    add rax,rbx\n    push rax\n";
+      break;
+    }
+  case SUB:
+     {
+       cout<<"    pop rbx\n    pop rax\n    sub rax,rbx\n    push rax\n";
+       break;
+     }
+  case AND:
+     {
+       cout<<"    pop rbx\n    pop rax\n    and rax,rbx\n    push rax\n";
+      break;
+     }
+  case OR:
+     {
+       cout<<"    pop rbx\n    pop rax\n    or rax,rbx\n    push rax\n";
+      break;
+     }
+  case MULT:
+     {
+       cout<<"    pop rbx\n    pop rax\n    imul rbx\n    push rax\n";
+      break;
+     }
+  case DIV:
+     {
+       cout<<"    mov rdx,0\n    pop rbx\n    pop rax\n    idiv rbx\n    push rax\n";
+       break;
+     }
+  case LABEL:
+     {
+       cout<<val<<"\n";
+       break;
+     }
+  case SEQ:
+    {
+      cout<<"";
+      break;
+      
+
+    }
+  case PARAM1:
+    {
+      cout<<"";
+      break;
+
+    }
+  case PARAM2:
+    {
+      cout<<"";
+      break;
+
+    }
+  case PARAM3:
+    {
+      cout<<"";
+      break;
+
+    }
+  case PARAM4:
+    {
+      cout<<"";
+      break;
+
+    }
+  case PARAM5:
+    {
+      cout<<"";
+      break;
+
+    }
+  case JUMP:
+     {
+       cout<<"    jmp "+val+"\n";
+       break;
+     }
+  case JUMPF:
+     {
+       cout<<"    pop rax\n    cmp rax,0\n    je "+val+"\n";
+       break;
+     }
+  case JUMPT:
+    {
+      cout<<"    pop rax\n    cmp rax,0\n    jne "+val+"\n";
+      break;
+    }
+  case CALL:
+    {
+      cout<<"    call "+val+"\n    push rax\n";
+      break;
+
+    }
+  case PRINTF:
+    {
+      string fmt = val;
+      int nparams = fmt.at(0) - '0';
+      fmt = "`" + fmt.substr(1) + "`";
+      fmts[nfmts++] = fmt;
+      cout<<"    mov rdi,fmt" + itos(nfmts)+"\n";
+      if (nparams == 5) {
+	cout<<"    pop r9\n";
+	--nparams;
+      }
+      if (nparams == 4) {
+	cout<<"    pop r8\n";
+	--nparams;
+      }
+      if (nparams == 3) {
+	cout<<"    pop rcx\n";
+	--nparams;
+      }
+      if (nparams == 2) {
+	cout<<"    pop rdx\n";
+	--nparams;
+      }
+      if (nparams == 1) {
+	cout<<"    pop rsi\n";
+      }
+      cout<<"    mov rax,0\n";
+      cout<<"    push rbp\n";
+      cout<<"    call printf\n";
+      cout<<"    pop rbp\n";
+      
+      break;
+ 
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  case STORE:
+      {
+        cout<<"    pop qword["+val+"]\n";
+	break;
+      }
+  case PUSHL:
+    {
+      cout<<"    mov rax,"+val+"\n    push rax\n";
+      break;
+ 
+    }
+  case PUSHV:
+    {
+      cout<<"    push qword["+val+"]\n";
+      break;
+    }
+
+  case FUNC:
+    {
+      currentFunc=val;
+      cout<<val+ "\n";
+      if(val!="main:")
+	{
+	  cout<<"    pop r15\n";
+	}
+      break;
+      
+    }
+  case RET:
+    {
+      cout<<"    pop rax\n";
+      if(currentFunc!="main:")//modified//wrong val
+	{
+	  cout<<"    push r15\n";
+	}
+      cout<<"    ret\n";
+      break;
+
+    }
+   
+  default:
+    {
+      relationalexprestaker(op,val);
+
+    }
+  }
+  
+     }
+
+
+  
+void Parser:: relationalexprestaker(Operation op, string val){
+   int count=0;
+    string Label1=makeLabel();
+    string Label2=makeLabel();
+    string optostring;
+    switch(op)
+      {
+      case ISEQ:
+	{
+	  optostring="     je";
+	  break;
+	}
+      case ISNE:
+	{
+	  optostring="     jne";
+	  break;
+	}
+      case ISLT:
+	 {
+	   optostring="    jl";
+	   break;
+	 }
+      case ISLE:
+	 {
+           optostring="    jle";
+	   break;
+	 }
+      case ISGT:
+	 {
+           optostring="    jg";
+	   break;
+	 }
+      case ISGE:
+	 {
+           optostring="    jge";
+	   break;
+	 }
+	 default:
+	{
+	  count++;
+          cout<<"   "+val+"not a sequence or others \n";
+	  break;
+	  }
+      }
+    if(count==0)
+      {
+	cout<<std::string("    pop rbx\n    pop rax\n    cmp rax,rbx\n")+optostring+" "+Label1+"\n"+"    mov rax,0\n"+"    jmp "+Label2+"\n"+Label1+":\n"+"    mov rax,1\n"+Label2+":\n"+"    push rax\n";
+      }
+  }
+
+
+/*Parser::void Parser:: genasm(TreeNode* node){
+  printf("     global main\n","     extern printf\n","     segment .bss\n");
+  }*/
+
+
+Parser::TreeNode* Parser::printfStatement() {
+  TreeNode* paramList = NULL;
+  int nparams = 0;
+  check(Token::PRINTF, "Expecting printf");
+  token = lexer.nextToken();
+  check(Token::LPAREN, "Expecting (");
+  token = lexer.nextToken();
+  check(Token::STRINGLIT, "Expecting string literal");
+  string formatString = token.getlexeme();
+  token = lexer.nextToken();
+  if (token.gettype() == Token::COMMA) {
+    token = lexer.nextToken();
+    paramList = expression();
+    ++nparams;
+    while (token.gettype() == Token::COMMA) {
+      token = lexer.nextToken();
+      paramList = new TreeNode(SEQ, paramList, expression());
+      ++nparams;
+    }
+  }
+  check(Token::RPAREN, "Expecting )");
+  token = lexer.nextToken();
+  check(Token::SEMICOLON, "Expecting ;");
+  token = lexer.nextToken();
+   TreeNode* printStatement =
+     new TreeNode(SEQ, paramList, new TreeNode(PRINTF, itos(nparams) + formatString));
+   return printStatement;
+}
