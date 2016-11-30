@@ -150,7 +150,7 @@ Token Lexer::nextToken()
 	tokepos++;
 	lineholder=line;
 	type=Token::STRINGLIT;
-	lexeme+='"';
+	//lexeme+='"';
 	ch=nextChar();
 	while(ch!='"')
 	  {
@@ -158,7 +158,7 @@ Token Lexer::nextToken()
 	 lexeme+=ch;
 	 ch=nextChar();	    
 	  }
-	lexeme+='"';
+	//lexeme+='"';
 	ch=nextChar();
        }
 	else{
