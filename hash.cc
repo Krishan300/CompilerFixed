@@ -4,15 +4,15 @@
   }*/
 
 Hash::Hash(string str) {
-  int tmp = 0;
-  int key=0;
-  string p = str;
-  int i;
-  for(i=0; i<(int) str.length(); ++i){
-    tmp += (int)str[i];
-   }
-  key = tmp;
-}
+ 
+    int tmp = 0;
+    const char *p = str.c_str();
+    while(*p) {
+      tmp += *p++;
+    }
+    key = abs(tmp);
+ 
+ }
 
 int Hash::hash() const{
   return key;
