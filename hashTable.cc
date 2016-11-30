@@ -20,21 +20,24 @@ HashTable::HashTable(const HashTable& t):size(t.size){
 }
 
 HashTable::~HashTable()  {}
-/* cout<<"yes"<<endl;
-    for(int j = 0; j < size; j++)
-      {
-    if(table[j] != NULL)
-      {
-      delete table[j];
-      }      
-     delete [] table;
-      }
+  /* cout<<"yes"<<endl;
+  for(int j = 0; j < size; j++)
     
-      } */
+      
+    if(table[j] != NULL)
+      
+      //  cout<<j<<endl;
+      delete table[j];
+      
+    
+      delete [] table;}*/
+     
+        
+       
 
 HashTable& HashTable::add(string str, string d){
   int h;
-  check(!inTable(str),"(add()) Duplicate key");
+  // check(!inTable(str),"(add()) Duplicate key");
   h = Hash(str).hash() % size;
   table[h] = new Link(str, d, table[h]);
   check(table[h] != NULL, "(add()) Heap overflow");
@@ -42,13 +45,18 @@ HashTable& HashTable::add(string str, string d){
 }
 
 bool HashTable::inTable(string k) const{
-  int h;
-  Link *temp;
-  h = Hash(k).hash() % size;
-  temp = table[h];
-  while(temp != NULL && temp->key!=k)
-    temp = temp->next;
-  return temp != NULL;
+    int h;
+   Link *temp;
+   // bool isinTable=false;
+    h = Hash(k).hash() % size;
+    temp = table[h];
+    while(temp != NULL && temp->key!= k)
+        
+     temp = temp->next;
+     
+      
+  
+     return temp!=NULL;
 }
 
 string& HashTable::operator [](string str){
