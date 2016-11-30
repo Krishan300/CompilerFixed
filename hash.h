@@ -7,7 +7,7 @@ class Hash{
 public:
   Hash(string);
   int hash() const;  //return the hash value
-private:
+  private:
   int key;  
 };
 #endif
