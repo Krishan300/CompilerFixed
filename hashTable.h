@@ -13,7 +13,7 @@ using namespace std;
 
 class HashTable{
 public:
-  HashTable(int n=97);
+  HashTable(int n=7927);
   HashTable(const HashTable &t);
   ~HashTable();
 
