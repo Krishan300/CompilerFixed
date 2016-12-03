@@ -1,3 +1,14 @@
+/*
+ File name: symbolTable.h
+ Description:header for SymbolTable
+ Project: Compiler
+ Author: Krishan Madan
+ Email: krm219
+ Class: CSE109
+ Professor: James Femister
+*/
+
+
 #ifndef SymbolTable_H
 #define SymbolTable_H
 #include <iostream>
