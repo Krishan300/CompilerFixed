@@ -20,6 +20,8 @@ public:
   */
   Link(const Link & t);
 
+  string getKey();
+
   /*Print out in the form  (2, 2.7)  */
   friend ostream& operator <<(ostream& out, const Link& t);
 };
