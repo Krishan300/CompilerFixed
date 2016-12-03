@@ -5,9 +5,13 @@ Link::Link(string k, string d, Link* nx):key(k),data(d),next(nx){}
 Link::Link(const Link& t):key(t.key),data(t.data),next(t.next){}
 
 ostream & operator<<(ostream& out,const Link& x){
-  out << "("<< x.key.c_str() << ", " << x.data << ")";
+  out << "("<< x.key  << ", " << x.data << ")";
   return out;
 }
+
+/*string getKey(){
+  return this->key;
+  }*/
 
 /*  Some simple tests of the class Link */
 void show(Link *t){
