@@ -1,3 +1,12 @@
+/*
+File name: Hash.cc
+Author: Krishan Madan
+Email: krm219
+Class: CSE109
+Professor: James Femister
+class was given-not written
+*/
+
 #include "hash.h"
 
 /*Hash::Hash(){
