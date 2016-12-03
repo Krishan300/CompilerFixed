@@ -1,3 +1,11 @@
+/*
+  File name: hashTable.h
+  Project: Compiler
+  Author: Krishan Madan
+  Email: krm219
+  Class: CSE109
+  Professor: James Femister
+*/
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 #include "hash.h"
