@@ -1,3 +1,11 @@
+/*
+  File name: hashTable.cc
+  Project: Compiler
+  Author: Krishan Madan
+  Email: krm219
+  Class: CSE109
+  Professor: James Femister
+*/
 #include "link.cc"
 #include "link.h"
 #include "hash.cc"//temporary fix
