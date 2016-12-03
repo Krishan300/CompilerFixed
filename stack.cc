@@ -1,3 +1,14 @@
+/*
+ File:Stack.cc
+ Description:Stack-customized for hashTables-not ints
+ Project:Compiler
+ Author:Krishan Madan
+ email:krm219
+
+*/
+
+
+
 #include <cstdlib>
 #include <stdio.h>
 #include <iostream>
@@ -22,11 +33,11 @@ Stack::Stack(const Stack& s)  { // Copy constructor
 }
 
 
-Stack::~Stack() {
-  if (stack != NULL) {
+Stack::~Stack() {}
+/*  if (stack != NULL) {
       delete [] stack;
   }
-}
+  }*/
 
 void Stack::push(HashTable val) {
   if (tos >= size - 1) {
@@ -46,7 +57,7 @@ HashTable Stack::pop() {
   }
 }
 
-HashTable Stack::peek() const {
+HashTable& Stack::peek() const {
   if (tos < 0) {
     cerr << "Peek on empty stack!\n";
     exit(1);
@@ -80,15 +91,16 @@ Stack s;
 //s[2] // === s.operator[](2)
 
 //s[2] = 4;
+
 HashTable& Stack::operator [](int i){
-  cout << "lvalue []\n";
+  //    cout << "lvalue []\n";
   checkIndex(i);
   return stack[i];
-}
+  }
 
 //x = s[2];
 const HashTable& Stack::operator [](int i) const {
   cout << "rvalue []\n";  
   checkIndex(i);  
   return stack[i];
-}
+  }
