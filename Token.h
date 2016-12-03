@@ -53,7 +53,7 @@ static const int MINUS=5;
   static const int ERROR=31;
   
 Token(int initialtype, string initiallexeme, int initline, int initpos);
-  Token() {};
+  Token(){};
  private:
  int type;
  string lexeme;
