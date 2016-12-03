@@ -1,3 +1,15 @@
+/*
+File name: parser.cc
+Description: parses code
+Project: Compiler
+Author: Krishan Madan
+Email: krm219
+Class: CSE109
+Professor: James Femister
+*/
+
+
+
 #include "parser.h"
 #include "Token.h"
 #include "SymbolTable.h"
@@ -30,29 +42,15 @@ const string Parser::ops[] =
 Parser::Parser(Lexer& lexerx, ostream& outx): lexer(lexerx), out(outx), lindex(1), tindex(1) {
     token = lexer.nextToken();
     tabofsymbols= SymbolTable();
-    pushvandstore=new string[1000];
+    pushvandstore=new string[1000];//used to store strings output in
+				   //bss section
     keepstrack=0; 
 }
 
-/*Parser::~Parser() {
-  }*/
 
-/*const string Parser::ops[] =
-  {"ADD", "SUB", "MULT", "DIV",
-               
-  "ISEQ", "ISNE", "ISLT", "ISLE", "ISGT", "ISGE",
-                                                
-  "AND", "OR",
+ 
 
-  "PUSHL", "PUSHV", "STORE",
 
-  "JUMP", "JUMPF", "JUMPT", "CALL", "RET",
-
-  "PRINTF",
-
-   "LABEL", "SEQ",
-
-   "PARAM1", "PARAM2", "PARAM3", "PARAM4", "PARAM5", "FUNC" };*/
 
 void Parser::error(string message) {
   cerr << message << " Found " << token.getlexeme() << " at line " << token.getline() << " position " << token.getposition() << endl;
@@ -339,18 +337,20 @@ Parser::TreeNode* Parser::ifStatement(){
 	  string Label2=JumpLabel2+":";
 	  TreeNode* LabelL2=new TreeNode(LABEL, Label2);
 	  node=new TreeNode(SEQ, node, LabelL2);
-	  
+          //token	  
 	}
       
       else{
 	string Label1=JUMPF1Label+":";
 	TreeNode* LabelL1=new TreeNode(LABEL, Label1);
+	//cout<<"here it is;";
 	node=new TreeNode(SEQ, node, LabelL1);
+	//token=lexer.nextToken();
       }
 
       
      }
-
+  //   token=lexer.nextToken();
   return node;
 
 }
@@ -535,10 +535,7 @@ Parser:: TreeNode* Parser::Function(){
   check(Token::LPAREN, "expecting left paren");
   // tabofsymbols.enterScope();
   token=lexer.nextToken();
- 
- 
- 
- 
+
     if(token.gettype()==Token::IDENT)
 	 {
 	   tabofsymbols.enterScope();
@@ -549,11 +546,7 @@ Parser:: TreeNode* Parser::Function(){
 	   TreeNode* otherleft=new TreeNode(STORE,passtoparam);
 	   token=lexer.nextToken();
            leftnode=new TreeNode(SEQ, leftnode, otherleft);
-	   
-	   // cout<<token.gettype()<<endl;
-	    token=lexer.nextToken();
-	    // cout<<token.gettype();
-	    while(identcounter>0)
+	   while(identcounter>0)
 	      {
 		if(token.gettype()==Token::COMMA)
 		  {
@@ -839,30 +832,7 @@ void Parser:: emit(Operation op, string val){
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  case STORE:
+    case STORE:
       {
         cout<<"    pop qword["+val+"]\n";
 	break;
