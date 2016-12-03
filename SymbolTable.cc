@@ -1,15 +1,14 @@
-
+/*
+File name: symbolTable.cc
+Description:generates Unique Symbols
+Project: Compiler
+Author: Krishan Madan
+Email: krm219
+Class: CSE109
+Professor: James Femister
+*/
 
 #include "SymbolTable.h"
-
- 
-//#include "hashTable.cc"
-
-//#include "stack.cc"//temporary fix
-//#include "hashTable.cc"//temporary fix
-//#include "hash.h"
-
-//#include "stack.cc"//tempfix
 #include <string>
 #include <sstream>
 #include <cstring>
@@ -25,7 +24,6 @@ SymbolTable::SymbolTable(int n)
 
 void SymbolTable::  enterScope(){
   HashTable currentScope(101);
-  // cout<<2<<endl;
   mainTable.push(currentScope);     
 }
 
