@@ -5,10 +5,13 @@
 #include "Lexer.h"
 #include "SymbolTable.h"
 #include "hash.h"
+//#include "hashTable.h"
+//#include "stringstack.h"
 #include <iostream>
 #include <string>
 #include <cstring>
 #include <stdlib.h>
+#include <stdio.h>
 #include <sstream>
 
 using namespace std;
@@ -107,7 +110,7 @@ private:
   static const string ops[];  
   void error(string message);
   void check(int tokenType, string message);
-  
+     
  public:
   //  TreeNode* funcall(string functionName);
   TreeNode* factor();
@@ -122,7 +125,7 @@ private:
   TreeNode* block();  
    TreeNode* assignmentExpression();
   TreeNode* funcall(string funcname);
-   TreeNode* vardefStatement();
+  TreeNode* vardefStatement();
   TreeNode* parameterdef(string paramname, int count);
   TreeNode* returnStatement();
   TreeNode* Function();
@@ -130,7 +133,7 @@ private:
   //  TreeNode* returnStatement();
   TreeNode* printfStatement();
   TreeNode* whileStatement();
-  
+  int keepstrack;  
   /* TreeNode* assignStatement();
   TreeNode* vardefStatement();  
   TreeNode* statement();
@@ -139,10 +142,18 @@ private:
   TreeNode* parameterdefs(string paramname, int count);
   TreeNode* function();
   TreeNode* compilationunit();*/  
-  //  SymbolTable tabofsymbols;
-    
+    SymbolTable tabofsymbols;
+  // Stringstack holdsthechars;
+  string *pushvandstore;
+  void genasm(TreeNode *node);
+  string currentFunc;
+  void genist(TreeNode *node);
+  void emit(Operation op, string val);
+  void relationalexprestaker(Operation op, string val);
+  void vardefs(TreeNode *node);
+  void bssection(TreeNode *node);
   Parser(Lexer& lexer, ostream& out);
-  ~Parser(); 
+  // ~Parser(); 
 
 };
 
