@@ -1,3 +1,10 @@
+/*
+  File name: Hash.cc
+  Author: Krishan Madan
+  Email: krm219
+  Class: CSE109
+  Professor: James Femister
+*/
 #ifndef HASH_H
 #define HASH_H
 #include <string>
