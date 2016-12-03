@@ -1,10 +1,13 @@
 /*
-  CSE 109
-  Krishan Madan
-  krm219
-  Breaks up input stream into tokens
-  Program #4
+  File name: Lexer.cc
+  Project: Compiler
+  Author: Krishan Madan
+  Email: krm219
+  Class: CSE109
+  Professor: James Femister
+  Description:creates tokens based on chars read from input stream
 */
+
 #include <iostream>
 #include <cstdlib>
 #include <stdio.h>
@@ -310,7 +313,18 @@ Token Lexer::nextToken()
 	   break;
 	   }
 
-	     
+	    case '!':
+	      {
+	    tokepos++;
+	    lineholder=line;
+	    lexeme+=ch;
+	    ch=nextChar();
+	    lexeme+=ch;
+	    ch=nextChar();
+	    type=Token::NE;
+	    break;
+               
+            }
            case '<':
 	   {
 	       
