@@ -1,4 +1,4 @@
-function main() {
+function main(a) {
   var a, b, c;
   
   a = 23;
@@ -11,6 +11,7 @@ function main() {
   if(a+c*2<16&&a>=8) {
     c = 5;
   }else{
-    c=123456;
     printf("%ld %ld\n", a, b);
-  }
+    c=123456;
+
+  }}

@@ -1,0 +1,97 @@
+#include <cstdlib>
+#include <stdio.h>
+#include <iostream>
+#include <string>
+#include "stringstack.h"
+
+using namespace std;
+
+Stringstack::Stringstack(int b):stringsize(b),stringtos(Stringstack::EMPTY) {
+  stack = new string[stringsize];
+}
+
+Stringstack::Stringstack():stringsize(10),stringtos(Stringstack::EMPTY) {
+  stack = new string[stringsize];
+  }
+
+Stringstack::Stringstack(const Stringstack& a)  { // Copy constructor
+  stringsize = a.stringsize;
+  stringtos = a.stringtos;
+  stack = new string[stringsize];
+  for (int i = 0; i < stringsize; ++i) {
+    stack[i] = a.stack[i];
+  }
+}
+
+
+Stringstack::~Stringstack() {}
+/*  if (stack != NULL) {
+      delete [] stack;
+  }
+  }*/
+
+void Stringstack::stringpush(string val) {
+  if (stringtos >= stringsize - 1) {
+    cerr << "Stack overflow\n";
+    exit(1);
+  } else {
+    stack[++stringtos] = val;
+  }
+}
+
+string Stringstack::stringpop() {
+  if (stringtos < 0) {
+    cerr << "Stack underflow\n";
+    exit(1);
+  } else {
+    return stack[stringtos--];
+  }
+}
+
+string Stringstack::stringpeek() const {
+  if (stringtos < 0) {
+    cerr << "Peek on empty stack!\n";
+    exit(1);
+  } else {
+    return stack[stringtos];
+  }
+}
+
+ostream& operator <<(ostream& out, const Stringstack& s){
+  out << "[ ";
+  //operator<<(out, "[ ");
+  for (int i=0; i <= s.stringtos; i++) {
+    out << s.stack[i] << " ";
+  }
+  out << "]";  
+  return out;
+}
+
+int Stringstack:: getstringtosindex(){
+  return stringtos;
+};
+
+void Stringstack::checkstringIndex(int i) const {
+  if (i < 0 || i > stringtos) {
+    cerr << "Index out of bounds\n";
+    exit(1);
+  }  
+}
+
+Stringstack s;
+//s[2] // === s.operator[](2)
+
+//s[2] = 4;
+
+string& Stringstack::operator [](int i){
+  //    cout << "lvalue []\n";
+  checkstringIndex(i);
+  return stack[i];
+  }
+
+//x = s[2];
+const string& Stringstack::operator [](int i) const {
+  cout << "rvalue []\n";  
+  checkstringIndex(i);  
+  return stack[i];
+  }

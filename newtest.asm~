@@ -1,0 +1,17 @@
+    global main
+    extern printf
+
+    segment .bss
+    y$1 resq 1
+    x$1 resq 1
+
+    section .text
+main:
+    mov rax,2
+    push rax
+    pop qword[y$1]
+    mov rax,1
+    push rax
+    pop qword[x$1]
+
+    section .data

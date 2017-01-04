@@ -1,0 +1,50 @@
+/*J Femister
+  CSE 109 - 010
+  Fall 2015
+*/
+
+#ifndef STRINGSTACK_H
+#define STRINGSTACK_H
+//#include "hashTable.cc"
+#include <iostream>
+#include <string>
+using namespace std;
+//class HashTable;
+class Stringstack {
+public:
+  // Constructors
+    Stringstack(int b);
+    Stringstack(); // Default constructor
+  Stringstack(const Stringstack& a); // Copy Constructor - deep copy
+
+  // Destructor
+  ~Stringstack();
+
+  // Regular Member Functions
+  void stringpush(string val);
+  string stringpop();
+  string stringpeek() const;
+
+  // Inline Member Function
+  bool ssisEmpty() const { return tos == EMPTY; } // inline member function
+
+  // Overloaded Operator Friend Functions
+  friend ostream& operator<<(ostream& out, const Stringstack& a);
+
+  // Overloaded Operator Member Functions
+    const string& operator[](int i) const; // rvalue
+
+    string& operator[](int i); // lvalue  s1[3]  =>  s1.operator[](3);
+
+  int getstringtosindex();
+private:
+  string *stack;
+  int stringsize;
+  int stringtos;
+  
+  static const int EMPTY = -1;
+  void checkstringIndex(int i) const;
+};
+
+#endif
+

@@ -5,7 +5,7 @@
 #include "Lexer.h"
 #include "SymbolTable.h"
 #include "hash.h"
-//#include "hashTable.h"
+#include "hashTable.h"
 //#include "stringstack.h"
 #include <iostream>
 #include <string>

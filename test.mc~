@@ -1,0 +1,12 @@
+function juicy(a,b,c){
+var x;
+var y;
+x=5;
+y=x-3;
+if(x>=y){
+var x;
+x=4;
+y=x+y;
+}
+return y;
+}

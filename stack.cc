@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <iostream>
-#include "hashTable.h"
+//#include "hashTable.h"
 #include "stack.h"
 
 Stack::Stack(int n):size(n),tos(Stack::EMPTY) {

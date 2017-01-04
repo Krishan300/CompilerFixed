@@ -1,0 +1,43 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+class account{
+public:
+account(int x);
+account();
+friend void operator+=(int x);
+friend void operator-=(int x);
+
+
+private:
+int balance;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -6,9 +6,9 @@
   Class: CSE109
   Professor: James Femister
 */
-#include "link.cc"
-#include "link.h"
-#include "hash.cc"//temporary fix
+//#include "link.cc"
+//#include "link.h"
+//#include "hash.cc"//temporary fix
 #include "hashTable.h"
 
 HashTable::HashTable(int n):size(n){
